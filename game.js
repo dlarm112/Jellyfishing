@@ -10,7 +10,6 @@ let lives = 3
 let finalDisplayScore = false
 let finalDisplayScoreReady = false;
 let history = [0]
-let blinkingScore = false
 
 let mySound
 let gameOverSound
@@ -20,6 +19,14 @@ let bubble1
 let bubble2
 let highscore
 let soundReady
+
+mySound = new Audio("sounds/bubbles.mp3");
+gameOverSound = new Audio("sounds/gameover.mp3");
+hitSound = new Audio("sounds/hit.mp3");
+backgroundSound = new Audio("sounds/background.mp3");
+bubble1 = new Audio("sounds/bubble1.mp3");
+bubble2 = new Audio("sounds/bubble2.mp3");
+highscore = new Audio("sounds/highscore.mp3");
 
 let frequency = 200;
 let blinking = false
@@ -66,17 +73,6 @@ function loadImages() {
     scoreBoardready = false;
   };
   scoreBoardImage.src = "images/score-board.png";
-
-  mySound = new Audio("sounds/bubbles.mp3");
-  gameOverSound = new Audio("sounds/gameover.mp3");
-  hitSound = new Audio("sounds/hit.mp3");
-  backgroundSound = new Audio("sounds/background.mp3");
-  bubble1 = new Audio("sounds/bubble1.mp3");
-  bubble2 = new Audio("sounds/bubble2.mp3");
-  highscore = new Audio("sounds/highscore.mp3");
-  backgroundSound.onload = function () {
-    soundReady = true;
-  }
 }
 
 let heroX = (canvas.width / 2) - 65;
@@ -105,7 +101,7 @@ function setupKeyboardListeners() {
 let update = function () {
   scoreBoardready = false
   finalDisplayScore = false
-  blinkingScore = false
+
   elapsedTime = Math.floor((Date.now() - startTime) / 1000);
   status = "running"
   if (37 in keysDown) { // LEFT
@@ -169,14 +165,18 @@ let update = function () {
     bubble1.play();
     console.log("score:", score)
   }
+  
   if (fishY2 > 500) {
     fishX2 = Math.floor(Math.random() * (canvas.width - 130) * 0.95)
     fishY2 = -130;
+
   }
   if (heroX < -130) {
     heroX = canvas.width - 130
+
   } else if (heroX > canvas.width - 130) {
     heroX = -130
+
   }
   if (heroY < 0) {
     heroY = 0
@@ -233,13 +233,13 @@ function getRndInteger() {
   let number = Math.floor(Math.random() * 100 + 1);
 
   if (number < 50) {
-    monsterX = -150
-    fishX = -150
+    monsterX = -200
+    fishX = -200
     createPatrick();
     return;
   } else
-    monsterX = -150
-  fishX = -150
+    monsterX = -200
+  fishX - 200
   createFish();
   return;
 }
@@ -308,9 +308,6 @@ function gameOverSequence() {
   render();
   status = "stopped"
 }
-
-
-
 
 var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
