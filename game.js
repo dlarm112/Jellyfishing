@@ -7,8 +7,10 @@ canvas.height = 500;
 document.body.appendChild(canvas);
 let score = 0
 let lives = 3
-let finalDisplayScore = ''
+let finalDisplayScore = false
 let finalDisplayScoreReady = false;
+let history = [0]
+let blinkingScore = false
 
 let mySound
 let gameOverSound
@@ -16,12 +18,12 @@ let hitSound
 let backgroundSound
 let bubble1
 let bubble2
+let highscore
 let soundReady
 
 let frequency = 200;
 let blinking = false
 let status = ''
-
 
 let bgReady, heroReady, monsterReady, fishReady, fishReady2, scoreBoardready;
 let bgImage, heroImage, monsterImage, fishImage, fishImage2, scoreBoardImage;
@@ -71,11 +73,12 @@ function loadImages() {
   backgroundSound = new Audio("sounds/background.mp3");
   bubble1 = new Audio("sounds/bubble1.mp3");
   bubble2 = new Audio("sounds/bubble2.mp3");
+  highscore = new Audio("sounds/highscore.mp3");
   backgroundSound.onload = function () {
     soundReady = true;
   }
 }
-let sc
+
 let heroX = (canvas.width / 2) - 65;
 let heroY = canvas.height - 130;
 
@@ -102,20 +105,21 @@ function setupKeyboardListeners() {
 let update = function () {
   scoreBoardready = false
   finalDisplayScore = false
+  blinkingScore = false
   elapsedTime = Math.floor((Date.now() - startTime) / 1000);
   status = "running"
   if (37 in keysDown) { // LEFT
-    heroX -= 5;
+    heroX -= 7;
     backgroundSound.play();
   }
   if (39 in keysDown) { // RIGHT 
-    heroX += 5;
+    heroX += 7;
     backgroundSound.play();
   }
 
-  monsterY += 8;
-  fishY += 5;
-  fishY2 += 3;
+  monsterY += 10;
+  fishY += 6;
+  fishY2 += 8;
   if (
     heroX <= (monsterX + 110) &&
     monsterX <= (heroX + 110) &&
@@ -169,10 +173,10 @@ let update = function () {
     fishX2 = Math.floor(Math.random() * (canvas.width - 130) * 0.95)
     fishY2 = -130;
   }
-  if (heroX < 0) {
-    heroX = 0
-  } else if (heroX > canvas.width - 130) {
+  if (heroX < -130) {
     heroX = canvas.width - 130
+  } else if (heroX > canvas.width - 130) {
+    heroX = -130
   }
   if (heroY < 0) {
     heroY = 0
@@ -181,9 +185,10 @@ let update = function () {
   }
 };
 // END UPDATE
-ctx.textAlign = "center";
+
 // RENDER
 let render = function () {
+
   if (bgReady) {
     ctx.drawImage(bgImage, 0, 0);
   }
@@ -206,9 +211,10 @@ let render = function () {
     ctx.drawImage(scoreBoardImage, 254, 147);
   }
   if (finalDisplayScoreReady) {
+    ctx.textAlign = "center";
     ctx.fillStyle = "#fef53d"
     ctx.font = "60px Impact";
-    ctx.fillText(`${score}`, 380, 285);
+    ctx.fillText(`${score}`, 395, 285);
   }
 
   // FONT PROPERTIES
@@ -219,6 +225,7 @@ let render = function () {
   ctx.fillText(`${lives}`, 706, 135);
   ctx.fillStyle = "white"
   ctx.fillText(`Seconds Remaining: ${SECONDS_PER_ROUND - elapsedTime}`, 30, 30);
+  ctx.fillText(`Hi Score: ${history[0]}`, 30, 470);
 };
 
 // PATRICK / JELLYFISH SELECTOR
@@ -283,7 +290,7 @@ var main = function () {
     requestAnimationFrame(main);
   } else {
     gameOverSequence();
-    console.log("else sequence worked")
+    console.log("game over sequence worked")
   }
 };
 
@@ -293,9 +300,17 @@ function gameOverSequence() {
   backgroundSound.currentTime = 0;
   scoreBoardready = true
   finalDisplayScoreReady = true
+  if (score > history[0]) {
+    history[0] = score
+    highscore.play();
+    blinkingScore = true;
+  }
   render();
   status = "stopped"
 }
+
+
+
 
 var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
