@@ -18,9 +18,9 @@ button{
     height: 50px;
     font-family: 'Balsamiq Sans', cursive;
     font-size: 30px;
-    color: white;
+    color: rgb(248 248 248);
     background-color: rgba(134, 228, 264, 0);
-    border: white solid 4px;
+    border: rgb(248 248 248) solid 4px;
     border-radius: 25px;
     transition-duration: .3s;
     outline: none;
@@ -38,9 +38,9 @@ button:hover{
     height: 50px;
     font-family: 'Balsamiq Sans', cursive;
     font-size: 30px;
-    color: white;
+    color: rgb(248 248 248);
     background-color: dodgerblue;
-    border: white solid 4px;
+    border: rgb(248 248 248) solid 4px;
     border-radius: 25px;
     outline: none;
     transition-duration: .3s;
@@ -50,9 +50,9 @@ button:active{
     height: 50px;
     font-family: 'Balsamiq Sans', cursive;
     font-size: 30px;
-    color: white;
+    color: rgb(248 248 248);
     background-color: rgb(114 208 244);
-    border: white solid 4px;
+    border: rgb(248 248 248) solid 4px;
     border-radius: 25px;
     outline: none;
 }
@@ -78,11 +78,11 @@ button:active{
 
 .col-4{
     padding-top: 5px;
-    background-color: white;
+    background-color:rgb(248 248 248);
 }
 .left{
     text-align: left;
 }
 .white{
-    background-color: white;
+    background-color: rgb(248 248 248);
 }

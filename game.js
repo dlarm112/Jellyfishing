@@ -106,13 +106,30 @@ function setupKeyboardListeners() {
     delete keysDown[key.keyCode];
   }, false);
 }
-//WINDOW SCROLL
-window.addEventListener("keydown", function(e) {
+//WINDOW SCROLL LOCK
+window.addEventListener("keydown", function (e) {
   // space and arrow keys
-  if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-      e.preventDefault();
+  if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+    e.preventDefault();
   }
 }, false);
+var count = canvas.height;
+var bubbles = [];
+var bubbleCount = 20;
+var bubbleSpeed = 1;
+var popLines = 6;
+var popDistance = 40;
+var mouseOffset = {
+  x: 0,
+  y: 0
+}
+
+
+
+
+
+
+
 
 
 // START UPDATE
@@ -140,7 +157,7 @@ let update = function () {
   if (40 in keysDown) { // DOWN
     heroY += 5
   }
-  monsterY += 10;
+  monsterY += 8;
   fishY += 6;
   fishY2 += 8;
   if (
@@ -225,9 +242,6 @@ let blinkFunc = function () {
 }
 // RENDER
 let render = function () {
-  if (bgReady) {
-    ctx.drawImage(bgImage, 0, 0);
-  }
   if (heroReady && left == true) {
     ctx.drawImage(heroImage, heroX, heroY);
   } else if (heroReady) {
@@ -246,20 +260,7 @@ let render = function () {
   if (fishReady2) {
     ctx.drawImage(fishImage2, fishX2, fishY2);
   }
-  if (scoreBoardready) {
-    ctx.drawImage(scoreBoardImage, 254, 147);
-  }
-  if (finalDisplayScoreReady) {
-    ctx.textAlign = "center";
-    ctx.font = "60px Impact";
-    ctx.fillStyle = "#fef53d"
-    ctx.fillText(`${score}`, 395, 285);
-    ctx.strokeStyle = "#702612"
-    ctx.lineWidth = 3;
-    ctx.strokeText(`${score}`, 395, 285);
-  }
-
-  // FONT PROPERTIES
+    // FONT PROPERTIES
   ctx.font = '25px Impact';
   ctx.fillStyle = "firebrick"
   ctx.textAlign = "left";
@@ -268,6 +269,7 @@ let render = function () {
   ctx.fillStyle = "white"
   ctx.fillText(`Seconds Remaining: ${SECONDS_PER_ROUND - elapsedTime}`, 30, 30);
   ctx.fillText(`Hi Score: ${history[0]}`, 30, 480);
+  
 };
 
 // PATRICK / JELLYFISH SELECTOR
@@ -287,7 +289,7 @@ function getRndInteger() {
 }
 let createPatrick = function () {
   monsterReady = true
-  monsterX = Math.floor(Math.random() * (canvas.width - 130) * 0.95)
+  monsterX = Math.floor(Math.random() * (canvas.width - 130) * 0.85)
   monsterY = -130;
 }
 let createFish = function () {
@@ -336,8 +338,6 @@ var main = function () {
   }
 };
 
-
-
 function gameOverSequence() {
   gameOverSound.play();
   backgroundSound.pause();
@@ -347,9 +347,7 @@ function gameOverSequence() {
   if (score > history[0]) {
     history[0] = score
     highscore.play();
-    blinkingScore = true;
   }
-  render();
   status = "stopped"
 }
 
@@ -357,3 +355,220 @@ var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 setupKeyboardListeners();
 loadImages();
+
+// --------------
+// Animation Loop
+// --------------
+
+function animate() {
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.beginPath();
+
+  if (scoreBoardready) {
+    ctx.drawImage(scoreBoardImage, 254, 147);
+  }
+  if (finalDisplayScoreReady) {
+    ctx.textAlign = "center";
+    ctx.font = "60px Impact";
+    ctx.fillStyle = "#fef53d"
+    ctx.fillText(`${score}`, 400, 285);
+    ctx.strokeStyle = "#702612"
+    ctx.lineWidth = 2.5;
+    ctx.strokeText(`${score}`, 400, 285);
+  }
+
+  for (var i = 0; i < bubbles.length; i++) {
+    // first num = distance between waves
+    // second num = wave height
+    // third num = move the center of the wave away from the edge
+    bubbles[i].position.x = Math.sin(bubbles[i].count / bubbles[i].distanceBetweenWaves) * 50 + bubbles[i].xOff;
+    bubbles[i].position.y = bubbles[i].count;
+    bubbles[i].render();
+
+    if (bubbles[i].count < 0 - bubbles[i].radius) {
+      bubbles[i].count = canvas.height + bubbles[i].yOff;
+    } else {
+      bubbles[i].count -= bubbleSpeed;
+    }
+  }
+
+  w.requestAnimationFrame(animate);
+}
+
+w.requestAnimationFrame(animate);
+
+
+
+// ------------------
+// Bubble Constructor
+// ------------------
+
+var createBubble = function () {
+  this.position = {
+    x: 0,
+    y: 0
+  };
+  this.radius = 8 + Math.random() * 6;
+  this.xOff = Math.random() * canvas.width - this.radius;
+  this.yOff = Math.random() * canvas.height;
+  this.distanceBetweenWaves = 50 + Math.random() * 40;
+  this.count = canvas.height + this.yOff;
+  this.color = '#8bc9ee';
+  this.lines = [];
+  this.popping = false;
+  this.maxRotation = 85;
+  this.rotation = Math.floor(Math.random() * (this.maxRotation - (this.maxRotation * -1))) + (this.maxRotation * -1);
+  this.rotationDirection = 'forward';
+
+  // Populate Lines
+  for (var i = 0; i < popLines; i++) {
+    var tempLine = new createLine();
+    tempLine.bubble = this;
+    tempLine.index = i;
+
+    this.lines.push(tempLine);
+  }
+
+  this.resetPosition = function () {
+    this.position = {
+      x: 0,
+      y: 0
+    };
+    this.radius = 8 + Math.random() * 6;
+    this.xOff = Math.random() * canvas.width - this.radius;
+    this.yOff = Math.random() * canvas.height;
+    this.distanceBetweenWaves = 50 + Math.random() * 40;
+    this.count = canvas.height + this.yOff;
+    this.popping = false;
+  }
+
+  // Render the circles
+  this.render = function () {
+    if (this.rotationDirection === 'forward') {
+      if (this.rotation < this.maxRotation) {
+        this.rotation++;
+      } else {
+        this.rotationDirection = 'backward';
+      }
+    } else {
+      if (this.rotation > this.maxRotation * -1) {
+        this.rotation--;
+      } else {
+        this.rotationDirection = 'forward';
+      }
+    }
+
+    ctx.save();
+    ctx.translate(this.position.x, this.position.y);
+    ctx.rotate(this.rotation * Math.PI / 180);
+
+    if (!this.popping) {
+      ctx.beginPath();
+      ctx.strokeStyle = '#8bc9ee';
+      ctx.lineWidth = 1;
+      ctx.arc(0, 0, this.radius - 3, 0, Math.PI * 1.5, true);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(0, 0, this.radius, 0, Math.PI * 2, false);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+    // Draw the lines
+    for (var a = 0; a < this.lines.length; a++) {
+      if (this.lines[a].popping) {
+        if (this.lines[a].lineLength < popDistance && !this.lines[a].inversePop) {
+          this.lines[a].popDistance += 0.06;
+        } else {
+          if (this.lines[a].popDistance >= 0) {
+            this.lines[a].inversePop = true;
+            this.lines[a].popDistanceReturn += 1;
+            this.lines[a].popDistance -= 0.03;
+          } else {
+            this.lines[a].resetValues();
+            this.resetPosition();
+          }
+        }
+
+        this.lines[a].updateValues();
+        this.lines[a].render();
+      }
+    }
+  }
+}
+
+
+
+// ----------------
+// Populate Bubbles
+// ----------------
+
+for (var i = 0; i < bubbleCount; i++) {
+  var tempBubble = new createBubble();
+
+  bubbles.push(tempBubble);
+}
+
+
+
+// ----------------
+// Line Constructor
+// ----------------
+
+function createLine() {
+  this.lineLength = 0;
+  this.popDistance = 0;
+  this.popDistanceReturn = 0;
+  this.inversePop = false; // When the lines reach full length they need to shrink into the end position
+  this.popping = false;
+
+  this.resetValues = function () {
+    this.lineLength = 0;
+    this.popDistance = 0;
+    this.popDistanceReturn = 0;
+    this.inversePop = false;
+    this.popping = false;
+
+    this.updateValues();
+  }
+
+  this.updateValues = function () {
+    this.x = this.bubble.position.x + (this.bubble.radius + this.popDistanceReturn) * Math.cos(2 * Math.PI * this.index / this.bubble.lines.length);
+    this.y = this.bubble.position.y + (this.bubble.radius + this.popDistanceReturn) * Math.sin(2 * Math.PI * this.index / this.bubble.lines.length);
+    this.lineLength = this.bubble.radius * this.popDistance;
+    this.endX = this.lineLength;
+    this.endY = this.lineLength;
+  }
+
+  this.render = function () {
+    this.updateValues();
+
+    ctx.beginPath();
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.moveTo(this.x, this.y);
+
+    if (this.x < this.bubble.position.x) {
+      this.endX = this.lineLength * -1;
+    }
+    if (this.y < this.bubble.position.y) {
+      this.endY = this.lineLength * -1;
+    }
+    if (this.y === this.bubble.position.y) {
+      this.endY = 0;
+    }
+    if (this.x === this.bubble.position.x) {
+      this.endX = 0;
+    }
+    ctx.lineTo(this.x + this.endX, this.y + this.endY);
+    ctx.stroke();
+    
+  };
+
+  
+
+}
