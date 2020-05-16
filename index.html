@@ -1,20 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Jellyfishing Game!</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <div>
-      <script src="game.js">
 
-      </script>
+<head>
+  <meta charset="utf-8">
+  <title>Spongebob's Jellyfishing Adventure</title>
+  <link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="game">
+  </div>
+  <script src="game.js">
+  </script>
+
+  <div class="spacer"></div>
+  <div class="white">
+    <div class="container">
+      <div class="text no-gutters row ">
+        <div class="col-4">
+          <h5>Use the arrow keys to catch jellyfish!</h5>
+          <div class="row">
+            <div class="col">
+              <img class="img-fluid" src="images/keys.png">
+            </div>
+            <div class="col">
+              <img class="img-responsive" src="images/sponge.png">
+            </div>
+            <div class="col">
+              <img src="images/fishWeb.png">
+            </div>
+          </div>
+        </div>
+        <div class="col-4">
+          <h2>Spongebob's Jellyfishing Adventure</h2>
+          <hr>
+          <h4 class="left">High Scores:</h4>
+          <p class="left">Name: </p>
+
+        </div>
+        <div class="col-4">
+          <h5>Avoid Falling Patricks</h5>
+
+          <img src="images/cancelPat.png">
+
+        </div>
+
+      </div>
     </div>
-    
-    
-    <div>
-    <button id="reset" onclick="reset()">RESET</button>
-    </div>
-  </body>
+  </div>
+  <div class="buttonDiv">
+    <button id="reset" onclick="reset()">PLAY</button>
+  </div>
+
+</body>
+
 </html>

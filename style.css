@@ -1,7 +1,87 @@
+
 body{
+    font-family: 'Balsamiq Sans', cursive;
     text-align: center;
+    background-image: url(/images/splash.jpg);
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-size: 114%;
+    margin: 0;
+    padding: 0;
 }
 body div {
-    display: inline-block;
+    display: block;
     text-align: center;
+}
+button{
+    width: 300px;
+    height: 50px;
+    font-family: 'Balsamiq Sans', cursive;
+    font-size: 30px;
+    color: white;
+    background-color: rgba(134, 228, 264, 0);
+    border: white solid 4px;
+    border-radius: 25px;
+    transition-duration: .3s;
+    outline: none;
+}
+button:active{
+    outline: none;
+}
+button:focus{
+    outline: none;
+}
+
+
+button:hover{
+    width: 300px;
+    height: 50px;
+    font-family: 'Balsamiq Sans', cursive;
+    font-size: 30px;
+    color: white;
+    background-color: dodgerblue;
+    border: white solid 4px;
+    border-radius: 25px;
+    outline: none;
+    transition-duration: .3s;
+}
+button:active{
+    width: 300px;
+    height: 50px;
+    font-family: 'Balsamiq Sans', cursive;
+    font-size: 30px;
+    color: white;
+    background-color: rgb(114 208 244);
+    border: white solid 4px;
+    border-radius: 25px;
+    outline: none;
+}
+.game{
+background-color: green;
+}
+
+.buttonDiv{
+    position: absolute;
+    top: 515px;
+    margin: 0 auto;
+    text-align: center;
+    width: 100%;
+}
+
+.text{
+    color: #333333;
+}
+.spacer{
+    height: 75px;
+}
+
+.col-4{
+    padding-top: 5px;
+    background-color: white;
+}
+.left{
+    text-align: left;
+}
+.white{
+    background-color: white;
 }

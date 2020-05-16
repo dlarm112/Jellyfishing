@@ -19,6 +19,8 @@ let bubble1
 let bubble2
 let highscore
 let soundReady
+let left
+let right
 
 mySound = new Audio("sounds/bubbles.mp3");
 gameOverSound = new Audio("sounds/gameover.mp3");
@@ -32,8 +34,8 @@ let frequency = 200;
 let blinking = false
 let status = ''
 
-let bgReady, heroReady, monsterReady, fishReady, fishReady2, scoreBoardready;
-let bgImage, heroImage, monsterImage, fishImage, fishImage2, scoreBoardImage;
+let bgReady, heroReady, monsterReady, fishReady, fishReady2, scoreBoardready, heroImageRightready;
+let bgImage, heroImage, monsterImage, fishImage, fishImage2, scoreBoardImage, heroImageRight;
 
 let startTime = Date.now();
 const SECONDS_PER_ROUND = 30;
@@ -73,6 +75,13 @@ function loadImages() {
     scoreBoardready = false;
   };
   scoreBoardImage.src = "images/score-board.png";
+
+
+  heroImageRight = new Image();
+  heroImageRight.onload = function () {
+    heroImageRightready = false;
+  };
+  heroImageRight.src = "images/heroImageRight.png";
 }
 
 let heroX = (canvas.width / 2) - 65;
@@ -97,6 +106,15 @@ function setupKeyboardListeners() {
     delete keysDown[key.keyCode];
   }, false);
 }
+//WINDOW SCROLL
+window.addEventListener("keydown", function(e) {
+  // space and arrow keys
+  if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+      e.preventDefault();
+  }
+}, false);
+
+
 // START UPDATE
 let update = function () {
   scoreBoardready = false
@@ -105,14 +123,23 @@ let update = function () {
   elapsedTime = Math.floor((Date.now() - startTime) / 1000);
   status = "running"
   if (37 in keysDown) { // LEFT
-    heroX -= 7;
+    heroX -= 7
+    left = true
+
     backgroundSound.play();
   }
   if (39 in keysDown) { // RIGHT 
     heroX += 7;
+    left = false
+
     backgroundSound.play();
   }
-
+  if (38 in keysDown) { // UP
+    heroY -= 5
+  }
+  if (40 in keysDown) { // DOWN
+    heroY += 5
+  }
   monsterY += 10;
   fishY += 6;
   fishY2 += 8;
@@ -122,6 +149,7 @@ let update = function () {
     heroY <= (monsterY + 110) &&
     monsterY <= (heroY + 110)
   ) {
+    monsterReady = false
     getRndInteger()
     blinking = true
     heroReady = false
@@ -140,7 +168,6 @@ let update = function () {
     getRndInteger();
     score++
     blinking = false
-    heroReady = true
     bubble2.pause();
     bubble2.currentTime = 0;
     bubble2.play();
@@ -165,7 +192,7 @@ let update = function () {
     bubble1.play();
     console.log("score:", score)
   }
-  
+
   if (fishY2 > 500) {
     fishX2 = Math.floor(Math.random() * (canvas.width - 130) * 0.95)
     fishY2 = -130;
@@ -178,25 +205,37 @@ let update = function () {
     heroX = -130
 
   }
-  if (heroY < 0) {
-    heroY = 0
+  if (heroY < canvas.height - 200) {
+    heroY = canvas.height - 200
   } else if (heroY > canvas.height - 130) {
     heroY = canvas.height - 130
   }
 };
 // END UPDATE
-
+//LEFT RIGHT BLINK FUNCTION
+let blinkFuncL = function () {
+  if (Math.floor(Date.now() / frequency) % 2) {
+    ctx.drawImage(heroImage, heroX, heroY);
+  }
+}
+let blinkFunc = function () {
+  if (Math.floor(Date.now() / frequency) % 2) {
+    ctx.drawImage(heroImageRight, heroX, heroY);
+  }
+}
 // RENDER
 let render = function () {
-
   if (bgReady) {
     ctx.drawImage(bgImage, 0, 0);
   }
-  if (heroReady) {
+  if (heroReady && left == true) {
     ctx.drawImage(heroImage, heroX, heroY);
-  }
-  if (!blinking || Math.floor(Date.now() / frequency) % 2) {
-    ctx.drawImage(heroImage, heroX, heroY);
+  } else if (heroReady) {
+    ctx.drawImage(heroImageRight, heroX, heroY);
+  } else if (left == true) {
+    blinkFuncL();
+  } else {
+    blinkFunc();
   }
   if (monsterReady) {
     ctx.drawImage(monsterImage, monsterX, monsterY);
@@ -212,20 +251,23 @@ let render = function () {
   }
   if (finalDisplayScoreReady) {
     ctx.textAlign = "center";
-    ctx.fillStyle = "#fef53d"
     ctx.font = "60px Impact";
+    ctx.fillStyle = "#fef53d"
     ctx.fillText(`${score}`, 395, 285);
+    ctx.strokeStyle = "#702612"
+    ctx.lineWidth = 3;
+    ctx.strokeText(`${score}`, 395, 285);
   }
 
   // FONT PROPERTIES
-  ctx.font = "25px Impact";
+  ctx.font = '25px Impact';
   ctx.fillStyle = "firebrick"
   ctx.textAlign = "left";
   ctx.fillText(`${score}`, 706, 82);
   ctx.fillText(`${lives}`, 706, 135);
   ctx.fillStyle = "white"
   ctx.fillText(`Seconds Remaining: ${SECONDS_PER_ROUND - elapsedTime}`, 30, 30);
-  ctx.fillText(`Hi Score: ${history[0]}`, 30, 470);
+  ctx.fillText(`Hi Score: ${history[0]}`, 30, 480);
 };
 
 // PATRICK / JELLYFISH SELECTOR
@@ -233,13 +275,13 @@ function getRndInteger() {
   let number = Math.floor(Math.random() * 100 + 1);
 
   if (number < 50) {
-    monsterX = -200
-    fishX = -200
+    monsterX = -300
+    fishX = -300
     createPatrick();
     return;
   } else
-    monsterX = -200
-  fishX - 200
+    monsterX = -300
+  fishX - 300
   createFish();
   return;
 }
@@ -294,6 +336,8 @@ var main = function () {
   }
 };
 
+
+
 function gameOverSequence() {
   gameOverSound.play();
   backgroundSound.pause();
@@ -311,6 +355,5 @@ function gameOverSequence() {
 
 var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
-loadImages();
 setupKeyboardListeners();
-main();
+loadImages();
