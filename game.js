@@ -260,15 +260,7 @@ let render = function () {
   if (fishReady2) {
     ctx.drawImage(fishImage2, fishX2, fishY2);
   }
-    // FONT PROPERTIES
-  ctx.font = '25px Impact';
-  ctx.fillStyle = "firebrick"
-  ctx.textAlign = "left";
-  ctx.fillText(`${score}`, 706, 82);
-  ctx.fillText(`${lives}`, 706, 135);
-  ctx.fillStyle = "white"
-  ctx.fillText(`Seconds Remaining: ${SECONDS_PER_ROUND - elapsedTime}`, 30, 30);
-  ctx.fillText(`Hi Score: ${history[0]}`, 30, 480);
+
   
 };
 
@@ -378,7 +370,18 @@ function animate() {
     ctx.lineWidth = 2.5;
     ctx.strokeText(`${score}`, 400, 285);
   }
-
+    // FONT PROPERTIES
+    ctx.font = '25px Impact';
+    ctx.fillStyle = "firebrick"
+    ctx.textAlign = "left";
+    ctx.fillText(`${score}`, 706, 82);
+    ctx.fillText(`${lives}`, 706, 135);
+    ctx.fillStyle = "white"
+    ctx.font = '40px Impact';
+    ctx.fillText(`${SECONDS_PER_ROUND - elapsedTime}`, 390, 50);
+    ctx.font = '25px Impact';
+    ctx.fillText(`Hi Score: ${history[0]}`, 30, 480);
+    
   for (var i = 0; i < bubbles.length; i++) {
     // first num = distance between waves
     // second num = wave height
